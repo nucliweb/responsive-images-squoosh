@@ -57,7 +57,7 @@ const getFormatImages = ({image, cb}) => {
 
 const getResponsiveImages = ORIGINAL_IMAGES.reduce((promiseChain, image) => {
   return promiseChain.then(() => new Promise((resolve) => {
-    encodeImage({image: image, cb: resolve})
+    encodeImage({image: image, cb: () => { resolve()} })
   }))
 }, Promise.resolve())
 
