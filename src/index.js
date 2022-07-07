@@ -23,12 +23,7 @@ fs.readdirSync(ORIGINALS).forEach((file) => {
   if (isImageFile) {
     FORMATS.map(async ({ width, format, suffix }) => {
       const originalImage = `${ORIGINALS}${file}`;
-      const command = `squoosh-cli 
-                        --resize '{"width":${width}}' 
-                        --${format} '${ENCODE_OPTIONS[format]}' 
-                        --output-dir '${IMAGES}' 
-                        --suffix '${suffix}' 
-                        ${originalImage}`;
+      const command = `squoosh-cli --resize '{"width":${width}}' --${format} '${ENCODE_OPTIONS[format]}' --output-dir '${IMAGES}' --suffix '${suffix}' ${originalImage}`;
 
       exec(command, (error, stdout, stderr) => {
         if (error) {
