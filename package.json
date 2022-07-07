@@ -12,7 +12,14 @@
     "type": "git",
     "url": "git+https://github.com/nucliweb/responsive-images-squoosh.git"
   },
-  "keywords": ["images", "optimization", "squoosh", "CLI", "webperf", "performance"],
+  "keywords": [
+    "images",
+    "optimization",
+    "squoosh",
+    "CLI",
+    "webperf",
+    "performance"
+  ],
   "author": "Joan León <joan.leon@gmail.com> (https://joanleon.dev/)",
   "license": "MIT",
   "bugs": {
