@@ -1,5 +1,5 @@
-import fs from "fs";
-import { exec } from "child_process";
+import fs from 'fs'
+import { exec } from 'child_process'
 
 import {
   ENCODE_OPTIONS,
@@ -7,35 +7,60 @@ import {
   IMAGES,
   ORIGINALS,
   PATTERN,
-} from "./config.js";
+} from './config.js'
 
-const imagePattern = new RegExp(PATTERN, "i");
+const imagePattern = new RegExp(PATTERN, 'i')
+const ORIGINAL_IMAGES = fs.readdirSync(ORIGINALS)
 
 // Remove images folder to delete previous optimized images
 if (fs.existsSync(IMAGES)) {
-  fs.rmSync(IMAGES, { recursive: true });
+  fs.rmSync(IMAGES, { recursive: true })
 }
 
-// Read original folder to get all images to optimize
-fs.readdirSync(ORIGINALS).forEach((file) => {
-  const isImageFile = imagePattern.test(file);
-
+const encodeImage = ({image, cb}) => {
+  const isImageFile = imagePattern.test(image)
+  
   if (isImageFile) {
-    FORMATS.map(async ({ width, format, suffix }) => {
-      const originalImage = `${ORIGINALS}${file}`;
-      const command = `squoosh-cli --resize '{"width":${width}}' --${format} '${ENCODE_OPTIONS[format]}' --output-dir '${IMAGES}' --suffix '${suffix}' ${originalImage}`;
-
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`stdout: ${stdout}`);
-      });
-    });
+    getFormatImages({image})
+    cb()
   }
-});
+}
+
+const encodeFormatImage = ({ image, formats }, cb) => {
+  const { width, format, suffix } = formats
+  const originalImage = `${ORIGINALS}${image}`
+  const command = `squoosh-cli --resize '{"width":${width}}' --${format} '${ENCODE_OPTIONS[format]}' --output-dir '${IMAGES}' --suffix '${suffix}' ${originalImage}`
+
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`error: ${error.message}`)
+      return
+    }
+    if (stderr) {
+      console.error(`stderr: ${stderr}`)
+      cb()
+      return
+    }
+    console.log(`stdout: ${stdout}`)
+    cb()
+  })
+}
+
+const getFormatImages = ({image, cb}) => {
+  FORMATS.reduce((promiseChain, formats) => {
+    return promiseChain.then(() => new Promise((resolve) => {
+      encodeFormatImage({image, formats}, resolve)
+      cb()
+    }))
+  }, Promise.resolve())
+} 
+
+const getResponsiveImages = ORIGINAL_IMAGES.reduce((promiseChain, image) => {
+  return promiseChain.then(() => new Promise((resolve) => {
+    encodeImage({image: image, cb: resolve})
+  }))
+}, Promise.resolve())
+
+getResponsiveImages
+  .then(() => console.log('✅ All images are resized and encoded, and now you are a better person 😊'))
+  .catch(err => { console.log(`❌ ERROR: ${err}`) });
