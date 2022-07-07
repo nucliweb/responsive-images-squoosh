@@ -17,11 +17,11 @@ if (fs.existsSync(IMAGES)) {
   fs.rmSync(IMAGES, { recursive: true })
 }
 
-const encodeImage = ({image, cb}) => {
+const encodeImage = ({image}, cb) => {
   const isImageFile = imagePattern.test(image)
   
   if (isImageFile) {
-    getFormatImages({image})
+    getFormatImages({image}, cb)
     cb()
   }
 }
@@ -46,7 +46,8 @@ const encodeFormatImage = ({ image, formats }, cb) => {
   })
 }
 
-const getFormatImages = ({image, cb}) => {
+const getFormatImages = ({image},  cb) => {
+  console.log({cb})
   FORMATS.reduce((promiseChain, formats) => {
     return promiseChain.then(() => new Promise((resolve) => {
       encodeFormatImage({image, formats}, resolve)
@@ -57,10 +58,10 @@ const getFormatImages = ({image, cb}) => {
 
 const getResponsiveImages = ORIGINAL_IMAGES.reduce((promiseChain, image) => {
   return promiseChain.then(() => new Promise((resolve) => {
-    encodeImage({image: image, cb: () => { resolve()} })
+    encodeImage({image: image}, resolve)
   }))
 }, Promise.resolve())
 
 getResponsiveImages
-  .then(() => console.log('✅ All images are resized and encoded, and now you are a better person 😊'))
+  .then(() => console.log('...'))
   .catch(err => { console.log(`❌ ERROR: ${err}`) });
