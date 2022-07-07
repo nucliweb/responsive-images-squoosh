@@ -47,7 +47,6 @@ const encodeFormatImage = ({ image, formats }, cb) => {
 }
 
 const getFormatImages = ({image},  cb) => {
-  console.log({cb})
   FORMATS.reduce((promiseChain, formats) => {
     return promiseChain.then(() => new Promise((resolve) => {
       encodeFormatImage({image, formats}, resolve)
