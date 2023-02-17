@@ -18,7 +18,11 @@ The `npm run compress` command gets all images in the `originals` folder and gen
 
 ## Photos and credits
 
-![Photos](assets/Photos.png)
+<picture>
+  <source type="image/avif" srcset="assets/Photos.avif">
+  <source type="image/webp" srcset="assets/Photos.webp">
+  <img src="assets/Photos.jpg" alt="Photos">
+</picture>
 
 <details>
   <summary>Photos by</summary>
